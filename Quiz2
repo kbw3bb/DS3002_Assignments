@@ -1,0 +1,31 @@
+import requests
+import json
+import time
+import numpy as np
+import csv
+
+apikey = "6HZNsrM37K5VKpexAaoe2aZg0P3GmDCU7LjBsX0D"
+url = "https://yfapi.net/v6/finance/quote"
+
+def stock_in():
+    ticker = str(input("Enter stock ticker"))
+    querystring = {"symbols":ticker}
+    headers = {'x-api-key': apikey}
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    
+    if response.status_code != 204:
+        stock_json = response.json()
+        stock_name = ticker
+        stock_price = stock_json['quoteResponse']['result'][0]["regularMarketPrice"]
+        timestamp = stock_json['quoteResponse']['result'][0]["regularMarketTime"]
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(timestamp))
+        output = ticker + ", " + str(timestamp) + ", " + str(stock_price)
+        print(output)
+            
+            return [stock_name, timestamp, stock_price]
+
+import csv
+data=stock_in()
+with open('stock.csv', mode = 'a') as stock_data:
+    stock_writer = csv.writer(stock_data, delimiter = ',', quotechar = '"', quoting=csv.QUOTE_MINIMAL)
+    stock_writer.writerow(data)
